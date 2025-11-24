@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Descubre tu nivel SubX</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Oxanium&display=swap');
+
+    body {
+  font-family: 'Oxanium', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #000; /* pots canviar si vols */
+  color: #fff;
+  position: relative; /* necessari per a ::before */
+  .level-table {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background-color: #444;
+  margin-bottom: 2rem;
+  overflow-x: auto; /* per si vols scroll suau */
+}
+
+.divider {
+  border: 0;
+  height: 1px;
+  width: 80%;
+  margin: 20px auto;
+  background: rgba(255, 255, 255, 0.25);
+}
+      
+.proposito-text {
+  color: white;
+  text-align: justify;
+  padding: 20px;
+  line-height: 1.5;
+  max-width: 900px; /* opcional, per no fer línies molt llargues */
+}
+
+#rankingTable tr:nth-child(even) {
+  background: rgba(255,255,255,0.28);
+}
+
+#rankingTable tr:nth-child(odd) {
+  background: rgba(255,255,255,0.28);
+}      
+      
+/* 📱 Versió mòbil: màxim 600px d'ample */
+@media (max-width: 600px) {
+  /* Assegura que el body i contenidors principals ocupin tot l'ample */
+  html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  /* Contenidors generals */
+  .container, .main, .wrapper {
+    width: 100% !important; /* força ocupar tot l'ample */
+    margin: 0;
+    padding: 0.5rem; /* padding opcional perquè no toqui cantons */
+  }
+
+  /* Taula de nivells */
+  .level-table {
+    width: 100% !important;
+    grid-template-columns: repeat(5, 1fr); /* 5 columnes iguals */
+    gap: 0.2rem; /* espai entre cel·les */
+  }
+
+  .level-table div {
+    font-size: 0.85rem;
+    padding: 0.4rem;
+    text-align: center; /* centra el text dins la cel·la */
+  }
+
+  /* Altres elements (formulari, botons, etc.) */
+  form, input, button, .btn {
+    width: 100% !important;
+    margin: 0.3rem 0;
+  }
+
+  @media (max-width: 600px) {
+  .level-table div {
+    font-size: 0.7rem;  /* més petit */
+    padding: 0.2rem;    /* menys espai intern */
+  }
+}
+  #rankingTable td, #rankingTable th {
+  font-size: 0.9rem; /* o 0.7rem per mòbils */
+  padding: 0.3rem 0.5rem;
+}
+
+@media (max-width: 600px) {
+  #rankingTable td, #rankingTable th {
+    font-size: 0.68rem;
+    padding: 0.2rem 0.3rem;
+  }
+}
+
+
+}
+
+.ranking-container {
+  position: relative; /* necessari per posicionar elements dins */
+}
+
+.last-update {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  font-size: 0.75rem; /* molt petit */
+  color: #888888; /* gris clar */
+  font-style: italic;
+  z-index: 20; /* per sobre del ranking */
+}
+
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url('SubX blanc.png');
+  background-repeat: repeat;
+  background-position: center;
+  background-size: 250px 250px;
+  opacity: 0.1; /* Baixa opacitat, ajusta fins que estigui subtil */
+  pointer-events: none;
+  z-index: -1;
+}
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+      text-align: center;
+    }
+    .logo {
+      max-width: 300px;
+      margin: 0 auto 2rem;
+    }
+    .logo img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+    .title-subtitle {
+      margin: 1rem 0 2rem;
+    }
+    .title-subtitle h1,
+    .title-subtitle h2 {
+      font-family: 'Orbitron', sans-serif;
+      margin: 0;
+    }
+    .title-subtitle h1 {
+      font-size: 2rem;
+    }
+    .title-subtitle h2 {
+      font-size: 1.1rem;
+      color: #ccc;
+      margin-top: 0.5rem;
+    }
+    .level-table {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background-color: #444;
+      margin-bottom: 2rem;
+    }
+    .level-table div {
+      padding: 0.8rem;
+      background-color: #000;
+      font-weight: bold;
+      font-family: 'Orbitron', sans-serif;
+      color: #fff;
+      transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    }
+    .level-table div.level-cell:hover {
+      transform: scale(1.05);
+      cursor: pointer;
+    }
+    .level-header {
+      background-color: #eee !important;
+      color: #000 !important;
+      cursor: default !important;
+      pointer-events: none;
+    }
+    .level-label {
+      background-color: #111;
+      color: #fff;
+      pointer-events: none;
+    }
+    .form-section {
+      display: none;
+      margin-top: 2rem;
+      text-align: left;
+      background-color: #111;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+    }
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0 1rem 0;
+      border-radius: 4px;
+      border: 1px solid #555;
+      background-color: #222;
+      color: #fff;
+    }
+    button {
+      padding: 0.75rem 1.5rem;
+      background-color: #fff;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .social-icons {
+      margin-top: 3rem;
+    }
+    .social-icons a {
+      margin: 0 10px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.5rem;
+    }
+  </style>
+  <!-- Cargamos los iconos de redes sociales -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="container">
+
+    <div class="logo">
+      <!-- Actualizamos el logo -->
+      <img src="SubX slogan blanc retallat.png" alt="SubX Logo">
+    </div>
+
+    <div class="title-subtitle" id="levelTitle" style="display: grid;">
+      <h1>Paso 1: Haz click en la celda Sub X que sea tu mejor marca personal</h1>
+      <h2>Solo un 6% de los corredores amateurs son Challenger en 10km. ¿Cuál es tu récord?</h2>
+    </div>
+
+    <div class="level-table" id="levelTable" style="display: grid;">
+      <!-- Cabeceras de la tabla -->
+      <div class="level-header">Nivel</div>
+      <div class="level-header">5K</div>
+      <div class="level-header">10K</div>
+      <div class="level-header">1/2 Maratón</div>
+      <div class="level-header">Maratón</div>
+    </div>
+
+    <div class="form-section" id="formSection">
+  <h3>📊 Paso 2: Entra en el ranking oficial</h3>
+  <p></p>
+
+  <form method="POST" action="https://formspree.io/f/xkgzeprk">
+    <input type="hidden" name="_next" value="/thank-you.html">
+    
+    <label for="name">Nombre completo:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="email">Correo electrónico:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="distance">Distancia:</label>
+    <select id="distance" name="distance" required>
+      <option value="5K">5K</option>
+      <option value="10K">10K</option>
+      <option value="21K">1/2 Maratón</option>
+      <option value="42K">Maratón</option>
+    </select>
+
+    <label for="level">Nivel Sub X:</label>
+    <select id="level" name="level" required></select>
+
+    <label for="aboutYou" style="margin-top: 1rem; font-weight: bold;">
+      ¿En qué carrera conseguiste esta marca personal? (Nombre y año de la carrera)
+    </label>
+    <textarea id="aboutYou" name="aboutYou" rows="4" style="width: 100%; padding: 0.5rem;" placeholder="Escribe aquí..."></textarea>
+ <!-- ✅ Checkbox de términos y condiciones -->
+  <div style="margin-bottom: 1rem;">
+    <input type="checkbox" id="termsCheckbox" name="terms" required>
+    <label for="termsCheckbox">Acepto los <a href="/terminos.html" target="_blank" style="color:#fff; text-decoration:underline;">términos y condiciones</a></label>
+  </div>
+
+    <button type="submit" id="submitButton">Entrar en la lista de espera</button>
+  </form>
+</div>
+
+
+    <!-- Enlaces a redes sociales -->
+    <p style="text-align: center; font-weight: bold; margin-top: 2rem;">Síguenos en redes</p>
+
+<div class="social-icons" style="display: flex; justify-content: center; gap: 20px; margin-top: 1rem;">
+  <a href="https://www.instagram.com/subx.run/" target="_blank" aria-label="Instagram SubX" style="color: inherit;">
+    <i class="fab fa-instagram" style="font-size: 2rem;"></i>
+  </a>
+  <a href="https://www.tiktok.com/@subx.run" target="_blank" aria-label="TikTok SubX" style="color: inherit;">
+    <i class="fab fa-tiktok" style="font-size: 2rem;"></i>
+  </a>
+</div>  
+
+  <script>
+    // Datos de los niveles SubX
+    const levels = [
+      { name: 'Legend', color: '#000000', p5k: 'Sub 16', p10k: 'Sub 33', p21k: 'Sub 1h13', p42k: 'Sub 2h34' },
+      { name: 'Master', color: '#F3E22B', p5k: 'Sub 17:30', p10k: 'Sub 36', p21k: 'Sub 1h20', p42k: 'Sub 2h48' },
+      { name: 'Challenger', color: '#DE0202', p5k: 'Sub 19', p10k: 'Sub 39', p21k: 'Sub 1h26', p42k: 'Sub 3h' },
+      { name: 'Performer', color: '#6A0040', p5k: 'Sub 20:30', p10k: 'Sub 42', p21k: 'Sub 1h33', p42k: 'Sub 3h15' },
+      { name: 'Contender', color: '#2B00B8', p5k: 'Sub 22', p10k: 'Sub 45', p21k: 'Sub 1h40', p42k: 'Sub 3h30' },
+      { name: 'Committed', color: '#1F80FF', p5k: 'Sub 23:30', p10k: 'Sub 48', p21k: 'Sub 1h46', p42k: 'Sub 3h45' },
+      { name: 'Disciplined', color: '#1FFFCE', p5k: 'Sub 25', p10k: 'Sub 51', p21k: 'Sub 1h53', p42k: 'Sub 4h' },
+      { name: 'Focused', color: '#66F47C', p5k: 'Sub 26:30', p10k: 'Sub 54', p21k: 'Sub 2h', p42k: 'Sub 4h20' },
+      { name: 'Builder', color: '#C6E865', p5k: 'Sub 28', p10k: 'Sub 57', p21k: 'Sub 2h06', p42k: 'Sub 4h40' },
+      { name: 'Finisher', color: '#FFB81F', p5k: 'Sub 29:30', p10k: 'Sub 60', p21k: 'Sub 2h13', p42k: 'Sub 5h' },
+      { name: 'Trainee', color: '#FFECC2', p5k: 'Sub 31', p10k: 'Sub 63', p21k: '', p42k: '' },
+      { name: 'Newbie', color: '#FFFFFF', p5k: 'Sub 32:30', p10k: 'Sub 66', p21k: '', p42k: '' }
+    ];
+
+    const table = document.getElementById('levelTable');
+    const formSection = document.getElementById('formSection');
+    const levelSelect = document.getElementById('level');
+    const submitButton = document.getElementById('submitButton');
+
+    // Cambia el color del botón según el nivel seleccionado manualmente en el desplegable
+    levelSelect.addEventListener('change', function () {
+      const selected = levels.find(l => l.name === this.value);
+      if (selected) {
+        submitButton.style.backgroundColor = selected.color;
+        submitButton.style.color = (selected.color.toLowerCase() === '#ffffff' || selected.color.toLowerCase() === '#ffecc2') ? '#000' : '#fff';
+      }
+    });
+
+    // Rellenamos la tabla con los niveles y sus tiempos
+    levels.forEach((level, rowIndex) => {
+      const row = [level.name, level.p5k, level.p10k, level.p21k, level.p42k];
+      row.forEach((cell, i) => {
+        const div = document.createElement('div');
+        div.textContent = cell;
+
+        const isStaticCorner = rowIndex >= levels.length - 2 && i >= 3;
+        const isStaticHeader = rowIndex === 0 && i === 0;
+        const isStaticColumn = i === 0;
+        const isStaticEmptyCorner = isStaticCorner || isStaticHeader || (i === 0 && (rowIndex === levels.length - 1 || rowIndex === levels.length - 2)) || (cell === '');
+
+        // Estilamos las celdas según su posición
+        div.className = isStaticColumn ? 'level-label' : 'level-cell';
+        div.style.backgroundColor = isStaticColumn ? level.color : '#111';
+        div.style.color = '#fff';
+
+        // Letra negra para ciertas celdas de la columna 1
+        if ((rowIndex === levels.length - 1 || rowIndex === levels.length - 2) && i === 0) {
+          div.style.color = '#000';
+        }
+
+        // Celdas interactivas que despliegan el formulario
+        if (!isStaticEmptyCorner && i !== 0 && cell !== '') {
+          div.addEventListener('mouseover', () => {
+            div.style.backgroundColor = level.color;
+            if (level.color.toLowerCase() === '#ffffff' || level.color.toLowerCase() === '#ffecc2') {
+              div.style.color = '#000';
+            }
+            div.style.cursor = 'pointer';
+            div.style.transform = 'scale(1.05)';
+          });
+          div.addEventListener('mouseout', () => {
+            div.style.backgroundColor = '#111';
+            div.style.color = '#fff';
+            div.style.transform = 'scale(1)';
+          });
+          div.addEventListener('click', () => {
+  formSection.style.display = 'block';
+  levelSelect.value = level.name;
+
+  // Assignem la distància segons la columna clicada
+  const distanceSelect = document.getElementById('distance');
+  const distanceByColumn = {
+    1: '5K',
+    2: '10K',
+    3: '21K',
+    4: '42K'
+  };
+  distanceSelect.value = distanceByColumn[i] || '';
+
+  // Canviem colors del botó
+  submitButton.style.backgroundColor = level.color;
+  submitButton.style.color = (level.color.toLowerCase() === '#ffffff' || level.color.toLowerCase() === '#ffecc2') ? '#000' : '#fff';
+
+  window.scrollTo({ top: formSection.offsetTop, behavior: 'smooth' });
+});
+
+        } else {
+          // Las celdas estáticas no son interactivas
+          div.style.cursor = 'default';
+          div.style.transform = 'none';
+        }
+
+        // Añadimos cada celda al contenedor de la tabla
+        table.appendChild(div);
+      });
+
+      // Añadimos las opciones al select del formulario
+      const option = document.createElement('option');
+      option.value = level.name;
+      option.textContent = level.name;
+      levelSelect.appendChild(option);
+    });
+  </script>
+
+        <hr class="divider">
+    
+       <!-- 🏆 RANKING SECTION -->
+    <section id="rankingSection" style="margin-bottom: 4rem;">
+      <h1 style="font-family: 'Orbitron', sans-serif; font-size: 2.2rem; text-align: center; margin-bottom: 1rem;">
+        🏁 Sub X's official Rankings 🏁
+      </h1>
+      <h2 style="font-family: 'Orbitron', sans-serif; font-size: 1.2rem; text-align: center; margin-bottom: 1rem;">
+        Forma parte de un Ranking dividido por niveles
+      </h2>
+
+<div class="proposito-text">
+  <h3>El propósito del Ranking SubX</h3>
+  <p>
+    SubX nace de las míticas marcas de referencia en running: Sub 40, Sub 1h30, Sub 3h00…
+    Son objetivos que muchos corredores amateurs se proponen y que representan grandes logros en este deporte.
+    Hasta ahora, cuando un corredor amateur mejora su marca personal en una carrera, por ejemplo de 46 a 44 minutos en un 10k, no recibe reconocimiento 
+    por su esfuerzo, no tiene claro cuánta gente corre a esos ritmos y no tiene motivación porque no sabe hasta dónde pueden llegar. En SubX venimos a revolucionar el deporte. Ofrecemos un 
+    <span style="font-weight:bold; ">sistema de niveles fiable, gratuito y reconocido por la comunidad</span>, 
+    con el que los corredores 
+    pueden identificarse y <span style="font-weight:bold; ">subir de nivel</span> cada vez que superan sus propias metas. Soñamos con que algún día los corredores
+    hablen de los niveles del running refiriéndose a que es nivel Performer desde el año pasado y que está a punto de convertirse en Challenger. Soñamos con un idioma común, y estamos orgullosos de que quieras formar parte desde sus inicios. Somos conscientes de que la gente va a compararse con los demás.
+    Nosotros confiamos en el poder de nuestro lema.
+    
+    <p>
+  De Newbie a Legend,
+</p>
+   <p>
+  Beat yourself.
+</p>
+
+</div>
+
+       <div class="proposito-text">
+  <h3>Las condiciones de los Rankings SubX</h3>
+  <p>
+    Los corredores y corredoras de estos rankings dan su consentimiento para formar parte. Las marcas que ha conseguido
+    han sido verificadas por nosotros y representan un tiempo real de una carrera regulada. Nadie podrá acceder en 
+    estos rankings si no acredita una marca totalmente verdadera. Debida su naturaleza, estos Rankings pueden contener 
+    errores o estar desactualizados. Si eso sucede contigo, utiliza el formulario siguiendo los pasos anteriores para
+    hacernos saber el error, tu marca actualizada o cualquier queja u opinión que quieras compartir. Las marcas compartidas por 
+    nuestro canal oficial serán inscritas en el ranking lo antes posible, es por eso que éste está sujeto a actualizaciones continuas.
+    Estamos constantemente mejorándolo para vosotros y estamos abiertos a propuestas. 
+
+</div>
+
+    <div class="logo" style="text-align: center;">
+      <!-- Actualizamos el logo -->
+      <img src="SubX ranking negre .png" alt="SubX Logo ranking" style="display: block; margin: 0 auto; width: 100%; max-width: 1400px;">
+    </div>
+      
+<!-- Aquí pegues los filtros -->
+<div id="rankingFilters">
+  <!-- Distàncies principals -->
+  <div id="mainDistance">
+    <button class="distance-btn" data-value="5k">5K</button>
+    <button class="distance-btn active" data-value="10k">10K</button>
+    <button class="distance-btn" data-value="21k">21K</button>
+    <button class="distance-btn" data-value="42k">42K</button>
+  </div>
+
+  <!-- Dropdown de nivells -->
+  <div id="levelDropdown" class="dropdown">
+    <button class="dropbtn" data-color="">Escoge tu nivel</button>
+    <div class="dropdown-content">
+      <div class="level-option" data-value="Escoge tu nivel" style="background:#cccccc; color:white;">Escoge tu nivel</div>
+      <div class="level-option" data-value="Legend" style="background:#000000; color:white;">Legend</div>
+      <div class="level-option" data-value="Master" style="background:#F3E22B; color:white;">Master</div>
+      <div class="level-option" data-value="Challenger" style="background:#DE0202; color:white;">Challenger</div>
+      <div class="level-option" data-value="Performer" style="background:#6A0040; color:white;">Performer</div>
+      <div class="level-option" data-value="Contender" style="background:#2B00B8; color:white;">Contender</div>
+      <div class="level-option" data-value="Committed" style="background:#1F80FF; color:white;">Committed</div>
+      <div class="level-option" data-value="Disciplined" style="background:#1FFFCE; color:white;">Disciplined</div>
+      <div class="level-option" data-value="Focused" style="background:#66F47C; color:white;">Focused</div>
+      <div class="level-option" data-value="Builder" style="background:#C6E865; color:white;">Builder</div>
+      <div class="level-option" data-value="Finisher" style="background:#FFB81F; color:white;">Finisher</div>
+      <div class="level-option" data-value="Trainee" style="background:#FFECC2; color:black;">Trainee</div>
+      <div class="level-option" data-value="Newbie" style="background:#FFFFFF; color:black;">Newbie</div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #rankingFilters {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 800px;
+    margin: 2rem auto;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  /* Distàncies principals */
+  #mainDistance {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .distance-btn {
+    flex: 1;
+    margin: 0 0.25rem;
+    padding: 0.8rem 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
+    background: transparent;
+    border: 2px solid #555;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .distance-btn.active {
+    border-color: #fff;
+    color: #cccccc;
+  }
+
+  .distance-btn:hover {
+    border-color: #aaa;
+    color: #aaa;
+  }
+
+  /* Dropdown nivells */
+  .dropdown {
+    position: relative;
+    width: 100%;
+    max-width: 250px;
+    margin-top: 0.5rem;
+  }
+
+  .dropbtn {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: left;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    width: 100%;
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 6px;
+    flex-direction: column;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    z-index: 1000;
+  }
+
+  .dropdown.show .dropdown-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .level-option {
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .level-option:hover {
+    opacity: 0.8;
+    transform: scale(1.03);
+  }
+</style>
+
+<script>
+  const distanceButtons = document.querySelectorAll('.distance-btn');
+  const dropdown = document.querySelector('.dropdown');
+  const dropbtn = dropdown.querySelector('.dropbtn');
+  const options = dropdown.querySelectorAll('.level-option');
+
+  let selectedLevelColor = "";
+  let selectedLevelTextColor = "";
+
+  function applyLevelColorToActiveDistance() {
+    const activeDistance = document.querySelector('.distance-btn.active');
+    if(activeDistance) {
+      if(selectedLevelColor) {
+        activeDistance.style.backgroundColor = selectedLevelColor;
+        activeDistance.style.color = selectedLevelTextColor;
+      } else {
+        activeDistance.style.backgroundColor = "transparent";
+        activeDistance.style.color = "#fff";
+      }
+    }
+  }
+
+  // Selecció de distància
+  distanceButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      distanceButtons.forEach(b => {
+        b.classList.remove('active');
+        b.style.backgroundColor = "transparent";
+        b.style.color = "#fff";
+      });
+      btn.classList.add('active');
+      applyLevelColorToActiveDistance();
+    });
+  });
+
+  // Dropdown nivells
+  dropbtn.addEventListener('click', () => dropdown.classList.toggle('show'));
+
+  options.forEach(option => {
+    option.addEventListener('click', () => {
+      dropbtn.textContent = option.textContent;
+      dropdown.classList.remove('show');
+
+      if(option.dataset.value !== "Escoge tu nivel") {
+        selectedLevelColor = option.style.backgroundColor;
+        selectedLevelTextColor = option.style.color;
+      } else {
+        selectedLevelColor = "";
+        selectedLevelTextColor = "";
+      }
+
+      applyLevelColorToActiveDistance();
+    });
+  });
+
+  window.addEventListener('click', e => {
+    if (!dropdown.contains(e.target)) dropdown.classList.remove('show');
+  });
+</script>
+
+<script>
+  // Canvi de botó actiu de distància
+  const distanceButtons = document.querySelectorAll('.distance-btn');
+  distanceButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      distanceButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      console.log("Distància seleccionada:", btn.dataset.value);
+    });
+  });
+</script>
+
+  <!-- Aquí va tu tabla existente -->
+      <!-- 🏆 RANKING TABLE -->
+<div style="overflow-x:auto; margin-top:2rem; width:100%; max-width:1000px; margin-left:auto; margin-right:auto;">
+  <table id="rankingTable" style="width:100%; border-collapse: collapse; font-family:'Oxanium', sans-serif;">
+    <thead style="background:#111; color:#fff;">
+      <tr>
+        <th style="padding:10px; border-bottom:2px solid #555;">Nivel</th>
+        <th style="padding:10px; border-bottom:2px solid #555;">Nombre</th>
+        <th style="padding:10px; border-bottom:2px solid #555;">Distancia</th>
+        <th style="padding:10px; border-bottom:2px solid #555;">Tiempo</th>
+        <th style="padding:10px; border-bottom:2px solid #555;">Carrera</th>
+        <th style="padding:10px; border-bottom:2px solid #555;">Fecha</th>
+      </tr>
+    </thead>
+    <tbody id="rankingBody"></tbody>
+  </table>
+</div>
+
+<div class="ranking-container">
+  <div class="last-update">Última actualización: 21/11/2025  19:22h</div>
+  <div class="ranking">
+  </div>
+</div>
+      
+<script>
+  // 🚀 Dades del ranking
+  const rankingData = [
+    {"name":"Yassine Ben Aissa","distance":"5k","time":"0:16:54","level":"Master","race":"11a Cursa Diagonal DIR Guàrdia Urbana","date":"25/05/25"},
+    {"name":"Karen Eugenia Rodriguez Garcia","distance":"10k","time":"1:01:08","level":"Trainee","race":"Cursa de la Mercè Bimbo Global Race","date":"21/09/25"},
+    {"name":"Petros Palatdis","distance":"10k","time":"0:45:07","level":"Committed","race":"Cursa Moritz Sant Antoni - Campionat de Catalunya","date":"26/01/25"},
+    {"name":"Ruben Jiménez Comendador","distance":"10k","time":"0:45:15","level":"Committed","race":"Cursa dels Nassos","date":"31/12/24"},
+    {"name":"Sebastian Paglia","distance":"10k","time":"0:53:35","level":"Focused","race":"Cursa de la Mercè Bimbo Global Race","date":"21/09/25"},
+    {"name":"Gorby Sivasothy","distance":"10k","time":"0:46:09","level":"Committed","race":"11a Cursa Diagonal DIR Guàrdia Urbana","date":"25/05/25"},
+    {"name":"Fabian Joel Galico Justitz","distance":"10k","time":"0:43:46","level":"Contender","race":"Cursa de la Mercè Bimbo Global Race","date":"29/09/24"},
+    {"name":"Pablo Burgos Amorós","distance":"5k","time":"0:19:26","level":"Performer","race":"Cursa Popular del Prat de Llobregat","date":"21/09/25"},
+    {"name":"Pablo Burgos Amorós","distance":"10k","time":"0:39:39","level":"Performer","race":"11a Cursa Diagonal DIR Guàrdia Urbana","date":"25/05/25"},
+    {"name":"Pablo Burgos Amorós","distance":"21k","time":"1:29:14","level":"Performer","race":"Mitja Marató Costa Barcelona Maresme","date":"28/09/25"},
+    {"name":"Carlos Gámez Ruiz","distance":"5k","time":"0:16:34","level":"Master","race":"10ª Cursa 5 km Ciutat de Vilanova","date":"18/05/25"},
+    {"name":"Carlos Gámez Ruiz","distance":"10k","time":"0:34:03","level":"Master","race":"Cursa de Bombers","date":"10/11/24"},
+    {"name":"Carlos Gámez Ruiz","distance":"21k","time":"1:14:55","level":"Master","race":"eDreams Mitja Marató Barcelona by Brooks","date":"16/02/25"},
+    {"name":"Carlos Gámez Ruiz","distance":"42k","time":"2:42:08","level":"Master","race":"Zurich Marató Barcelona","date":"16/03/25"},
+    {"name":"Ignacio Gómez Seura","distance":"21k","time":"1:58:29","level":"Focused","race":"Zurich Rock 'n' Roll Running Series Madrid","date":"27/04/25"},
+    {"name":"Ignacio Gómez Seura","distance":"10k","time":"0:48:58","level":"Disciplined","race":"El Derbi de las Aficiones","date":"10/11/25"},
+    {"name":"Ivan Torrente Raya","distance":"5k","time":"0:18:34","level":"Challenger","race":"44A San Silvestre del Masnou","date":"26/12/23"},
+    {"name":"Ivan Torrente Raya","distance":"10k","time":"0:37:20","level":"Challenger","race":"Cursa de la Mercè Bimbo Global Race","date":"29/09/24"},
+    {"name":"Ivan Torrente Raya","distance":"21k","time":"1:23:26","level":"Challenger","race":"eDreams Mitja Marató Barcelona by Brooks","date":"16/02/25"},
+    {"name":"Williams Eduardo Mamani Capia","distance":"10k","time":"0:50:30","level":"Disciplined","race":"Bimbo Global Race Perú","date":"28/09/25"},
+    {"name":"David Vega Vilalta","distance":"5k","time":"0:17:23","level":"Master","race":"IV Mitja Marató de Vila-Seca Modalitat 5K","date":"19/10/25"},
+    {"name":"David Vega Vilalta","distance":"10k","time":"0:35:33","level":"Master","race":"Cursa Moritz Sant Antoni - Campionat de Catalunya","date":"21/01/24"},
+    {"name":"David Vega Vilalta","distance":"21k","time":"1:19:36","level":"Master","race":"eDreams Mitja Marató Barcelona by Brooks","date":"16/02/25"},
+    {"name":"Martí del Rio Palliso","distance":"5k","time":"0:20:06","level":"Performer","race":"XIII Cursa Nick Horta","date":"05/10/25"},
+    {"name":"Arnau Lamana Ferrero","distance":"5k","time":"0:22:25","level":"Committed","race":"XIII Cursa Nick Horta","date":"05/10/25"},
+    {"name":"Arnau Lamana Ferrero","distance":"10k","time":"0:48:54","level":"Disciplined","race":"36a Cursa de la Llagosta","date":"28/09/25"},
+    {"name":"Ivan Rodriguez Finistrosa","distance":"10k","time":"0:44:29","level":"Contender","race":"Martín Fiz Vitoria","date":"11/05/25"},
+    {"name":"Juan Sáez Espada","distance":"10k","time":"0:41:14","level":"Performer","race":"San Silvestre Alcalaína","date":"31/12/23"},
+    {"name":"Eneko Portu Irasuegui","distance":"10k","time":"0:33:11","level":"Master","race":"Cross Tres Playas","date":"12/10/25"},
+    {"name":"Carlos Rodrigo Imbernón Albertos","distance":"21k","time":"1:34:01","level":"Contender","race":"II Getxoko Maratoi erdia","date":"30/03/25"},
+    {"name":"Marcos Agustin Barrios Baez","distance":"5k","time":"0:17:57","level":"Challenger","race":"El SanBa Corre","date":"06/09/25"},
+    {"name":"Nacho Morales Aguilar","distance":"10k","time":"0:41:07","level":"Performer","race":"El Tast de la Mitja","date":"25/10/25"},
+    {"name":"Francisco Jose Bandera Garcia","distance":"10k","time":"0:44:28","level":"Contender","race":"El Tast de la Mitja","date":"25/10/25"},
+    {"name":"Marianela Pesaresi Ferreyra","distance":"10k","time":"0:53:51","level":"Focused","race":"El Tast de la Mitja","date":"25/10/25"},
+    {"name":"Sergi Jacas Puig","distance":"10k","time":"0:37:39","level":"Challenger","race":"Cursa El Corte Inglés","date":"11/05/25"},
+    {"name":"Alberto Castro Checa","distance":"10k","time":"0:39:46","level":"Performer","race":"El Tast de la Mitja","date":"25/10/25"},
+    {"name":"Arnau Lamana Ferrero","distance":"21k","time":"2:05:01","level":"Builder","race":"Bilbao Night Running Fest","date":"18/10/25"},
+    {"name":"Ivan Marin Millan","distance":"10k","time":"0:40:42","level":"Performer","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Marcos Arroyo Garcia","distance":"10k","time":"0:44:15","level":"Contender","race":"El Tast de la Mitja","date":"25/10/25"},
+    {"name":"Daniel Tenllado Ortega","distance":"10k","time":"0:43:21","level":"Contender","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Irene Anguera Murtra","distance":"10k","time":"0:47:32","level":"Committed","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Pol Graells Garcia","distance":"10k","time":"0:46:51","level":"Committed","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Ramon Nieto Reguant","distance":"10k","time":"0:43:52","level":"Contender","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Andreu Gabriel Serrà","distance":"21k","time":"1:38:53","level":"Contender","race":"La Mitja","date":"02/03/25"},
+    {"name":"Marc Gómez Sánchez","distance":"10k","time":"0:44:34","level":"Contender","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Fanny Thille Huin","distance":"10k","time":"0:50:26","level":"Disciplined","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Jaume Juanola Para","distance":"42k","time":"3:13:01","level":"Performer","race":"Marató de Barcelona","date":"16/03/25"},
+    {"name":"Daniel Salvador Sanchez","distance":"10k","time":"0:42:50","level":"Contender","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Daniel Salvador Sanchez","distance":"21k","time":"1:43:00","level":"Committed","race":"Mitja Marató Costa Barcelona Maresme","date":"28/09/25"},
+    {"name":"Daniel Salvador Sanchez","distance":"42k","time":"4:01:20","level":"Focused","race":"Marató de Barcelona","date":"17/03/13"},
+    {"name":"Anibal Montero Vidiella","distance":"10k","time":"0:40:21","level":"Performer","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Carlos Villarreal Ortiz","distance":"10k","time":"0:44:35","level":"Contender","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Marc Puig Tornero","distance":"10k","time":"0:44:53","level":"Contender","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Raul Cartiel Vesperinas","distance":"10k","time":"0:51:24","level":"Focused","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Maria do Mar Barata Ferreira","distance":"10k","time":"0:52:07","level":"Focused","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Aimon Franch Viñals","distance":"21k","time":"2:04:15","level":"Builder","race":"Mitja Marató de Barcelona","date":"16/02/25"},
+    {"name":"Marc-Lukeni Vallespí Unzua","distance":"10k","time":"0:51:09","level":"Focused","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Joel Gonzalez Ogando","distance":"10k","time":"0:46:33","level":"Committed","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Manel Martori Torres","distance":"10k","time":"0:41:55","level":"Performer","race":"Cursa dels Nassos","date":"31/12/13"},
+    {"name":"Anna Colomer Comellas","distance":"10k","time":"0:49:20","level":"Disciplined","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Anna Colomer Comellas","distance":"5k","time":"0:23:16","level":"Committed","race":"IV Race for life pel càncer de mama","date":"19/10/25"},
+    {"name":"Jose Gonzalez Garcia","distance":"10k","time":"0:43:37","level":"Contender","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Federico Botero Pineda","distance":"5k","time":"0:19:57","level":"Performer","race":"Cursa Moritz Sant Antoni","date":"26/01/25"},
+    {"name":"Marti Mones Vivo","distance":"10k","time":"0:44:04","level":"Contender","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Víctor Obis Paredes","distance":"10k","time":"0:44:50","level":"Contender","race":"Cursa El Corte Inglés","date":"11/05/25"},
+    {"name":"Carolina Llanos Diaz","distance":"10k","time":"0:54:10","level":"Builder","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Yerry Luiz Maldonado Ramoa","distance":"10k","time":"0:44:05","level":"Contender","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Paula Caball Farreró","distance":"10k","time":"0:45:29","level":"Committed","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Daniel Cortes Gonzalez","distance":"10k","time":"0:57:02","level":"Finisher","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Daniel Cortes Gonzalez","distance":"5k","time":"0:21:57","level":"Contender","race":"Màgic BDN Running","date":"27/10/24"},
+    {"name":"Ricard Pérez Alonso","distance":"42k","time":"3:16:09","level":"Contender","race":"Marató de Barcelona","date":"08/05/22"},
+    {"name":"Ricard Pérez Alonso","distance":"21k","time":"1:29:32","level":"Performer","race":"Mitja Marató de Barcelona","date":"03/04/22"},
+    {"name":"Ana Carlota De la Peña Calderón","distance":"10k","time":"1:04:13","level":"Newbie","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Adolfo Hurtado Briones","distance":"10k","time":"0:39:42","level":"Performer","race":"14a Cursa Vilafranca del Penedès","date":"26/01/25"},
+    {"name":"Mireia Arenas Castilla","distance":"10k","time":"0:48:04","level":"Disciplined","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Vinyet Mercadé Cuartero","distance":"10k","time":"0:53:33","level":"Focused","race":"101 Jean Bouin Open","date":"01/12/24"},
+    {"name":"Jhersson Efraín Pérez Machuca","distance":"10k","time":"0:47:40","level":"Committed","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Claudia Ribera Raja","distance":"10k","time":"0:52:57","level":"Focused","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Claudia Ribera Raja","distance":"5k","time":"0:23:32","level":"Disciplined","race":"47a Cursa Popular Igualada","date":"19/10/25"},
+    {"name":"Eva Santamaría Franco","distance":"10k","time":"0:48:33","level":"Disciplined","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Kseniia Vidishcheva","distance":"21k","time":"1:43:44","level":"Committed","race":"34º Medio Maratón Valencia Trinidad Alfonso Zurich","date":"26/10/25"},
+    {"name":"Daniel Frases Muñoz","distance":"21k","time":"2:10:33","level":"Finisher","race":"VI Gran Carrera del Mediterráneo","date":"09/11/25"},
+    {"name":"Daniel Frases Muñoz","distance":"10k","time":"0:56:15","level":"Builder","race":"29º 10k Aguas de Alicante","date":"16/02/25"},
+    {"name":"Jesús López Ruiz","distance":"10k","time":"0:49:24","level":"Disciplined","race":"Madrid Vintage Run","date":"06/08/25"},
+    {"name":"Víctor Cuesta Garcia","distance":"10k","time":"0:37:43","level":"Challenger","race":"El Derbi de las Aficiones","date":"09/11/25"},
+    {"name":"Climaco Antonio Vergara Martínez","distance":"10k","time":"0:56:02","level":"Builder","race":"Hidratao San Silvestre Cartagena","date":"28/12/24"},
+    {"name":"Jose Luis Palmer García","distance":"21k","time":"1:22:59","level":"Challenger","race":"Movistar Madrid","date":"06/04/25"},
+    {"name":"Anamar Luzuriaga Estalayo","distance":"10k","time":"0:48:40","level":"Disciplined","race":"Cross Tres Playa","date":"12/10/25"},
+    {"name":"Leo De Souza","distance":"42k","time":"3:13:51","level":"Performer","race":"Maratón de Punta del Este","date":"07/09/25"},
+    {"name":"Angel Mangas Adrover","distance":"42k","time":"3:09:30","level":"Performer","race":"44º Maratón Valencia Trinidad Alfonso Zurich","date":"01/12/24"},
+    {"name":"Francisco Javier Gutierrez Morales","distance":"21k","time":"1:27:39","level":"Performer","race":"ASICS Golden Run","date":"08/02/25"},
+    {"name":"Miguel Martínez Chueca","distance":"42k","time":"3:51:31","level":"Disciplined","race":"Generali Maratón Málaga","date":"10/12/23"},
+    {"name":"Gorka Lecumberri Mier","distance":"42k","time":"3:15:49","level":"Contender","race":"Zurich Maratón San Sebastián","date":"26/11/23"},
+    {"name":"Xavi Coret Mayoral","distance":"10k","time":"0:40:50","level":"Performer","race":"XXXIII Cursa del Club Natació Sabadell Beat for Life","date":"16/11/25"},
+    {"name":"Mamen Del Castillo Acevedo","distance":"10k","time":"0:41:49","level":"Performer","race":"101 Jean Bouin Open","date":"01/12/24"},
+    {"name":"Mamen Del Castillo Acevedo","distance":"5k","time":"0:20:19","level":"Performer","race":"Vilanova Night Run","date":"15/11/25"},
+    {"name":"Mamen Del Castillo Acevedo","distance":"21k","time":"1:35:32","level":"Contender","race":"Mitja Marató Costa Barcelona Maresme","date":"29/09/24"},
+    {"name":"Mamen Del Castillo Acevedo","distance":"42k","time":"3:32:32","level":"Committed","race":"Zurich Marató Barcelona","date":"10/03/24"},
+    {"name":"Pau Civera Poceiro","distance":"10k","time":"0:34:31","level":"Master","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Jordi Vicente Pérez","distance":"10k","time":"0:32:33","level":"Legend","race":"Cursa dels Nassos","date":"31/12/24"},
+    {"name":"David Ortiz Martín","distance":"21k","time":"1:18:20","level":"Master","race":"XXXVI Media Maratón Valladolid","date":"28/09/25"},
+    {"name":"Jose Pereira Ruiz","distance":"10k","time":"0:35:28","level":"Master","race":"26 Vueling Cursa Bombers","date":"09/11/25"},
+    {"name":"Cristian Martínez Cantón","distance":"10k","time":"0:33:20","level":"Master","race":"Cursa dels Nassos","date":"31/12/23"},
+    {"name":"Nils Lehmann Podadera","distance":"10k","time":"0:32:49","level":"Legend","race":"El Derbi de las Aficiones","date":"10/11/25"},
+    {"name":"Miguel Martínez Chueca","distance":"21k","time":"1:45:12","level":"Committed","race":"Mitja Marató Espirall - Vilafranca","date":"16/11/25"},
+    {"name":"Héctor Doñoro Blázquez","distance":"21k","time":"1:25:00","level":"Challenger","race":"Zurich Rock 'n' Roll Running Series Madrid","date":"27/04/25"},
+    {"name":"Iyad Anas Chalabi Zerrouki","distance":"10k","time":"0:39:05","level":"Performer","race":"26 Media Maratón de Cuenca y 10k","date":"25/10/25"},
+    {"name":"Alejandro Fernández Navarro","distance":"42k","time":"3:13:24","level":"Performer","race":"44º Maratón Valencia Trinidad Alfonso Zurich","date":"01/12/24"},
+    {"name":"Inti Adan Mora","distance":"5k","time":"0:17:05","level":"Master","race":"44a Cursa solidària Ciutat de Cornellà. La de deu","date":"19/10/25"},
+    {"name":"Kenett Ariel Sotomayor Morales","distance":"5k","time":"0:25:52","level":"Focused","race":"5K Por El Ozono","date":"28/09/25"},
+    {"name":"David Lombrana Chamorro","distance":"5k","time":"0:14:59","level":"Legend","race":"101 Jean Bouin Open","date":"01/12/24"},
+    {"name":"Rodrigo Pérez García","distance":"10k","time":"0:34:28","level":"Master","race":"Madrid Vintage Run","date":"06/08/25"},
+  ];
+
+  const rankingBody = document.getElementById('rankingBody');
+
+  function renderRanking() {
+  const activeDistance = document.querySelector('.distance-btn.active').dataset.value;
+  const activeLevel = dropbtn.textContent === "Escoge tu nivel" ? null : dropbtn.textContent;
+
+  // Filtrar per distància i nivell
+  const filtered = rankingData.filter(r => 
+    r.distance === activeDistance && (!activeLevel || r.level === activeLevel)
+  );
+
+  // Ordenar per temps (en segons)
+  filtered.sort((a,b) => {
+    const aSec = a.time.split(':').reduce((acc, t) => 60*acc + +t,0);
+    const bSec = b.time.split(':').reduce((acc, t) => 60*acc + +t,0);
+    return aSec - bSec;
+  });
+
+  // Map de colors per nivell
+  const levelColors = {
+    "Legend": "#000000",
+    "Master": "#F3E22B",
+    "Challenger": "#DE0202",
+    "Performer": "#6A0040",
+    "Contender": "#2B00B8",
+    "Committed": "#1F80FF",
+    "Disciplined": "#1FFFCE",
+    "Focused": "#66F47C",
+    "Builder": "#C6E865",
+    "Finisher": "#FFB81F",
+    "Trainee": "#FFECC2",
+    "Newbie": "#FFFFFF"
+  };
+
+  // Renderitzar a la taula amb nivell i temps amb color del nivell
+  rankingBody.innerHTML = filtered.map(r => `
+    <tr style="border-bottom:1px solid #555;">
+      <td style="padding:8px; font-weight:bold; color:${levelColors[r.level] || '#fff'};">${r.level}</td>
+      <td style="padding:8px; color:#fff;">${r.name}</td>
+      <td style="padding:8px; color:#fff;">${r.distance}</td>
+      <td style="padding:8px; color:${levelColors[r.level] || '#fff'};">${r.time}</td>
+      <td style="padding:8px; color:#fff;">${r.race}</td>
+      <td style="padding:8px; color:#fff;">${r.date}</td>
+    </tr>
+  `).join('');
+}
+
+  // Inicial
+  renderRanking();
+
+  // Re-render quan canvies filtres
+  distanceButtons.forEach(btn => btn.addEventListener('click', renderRanking));
+  options.forEach(opt => opt.addEventListener('click', renderRanking));
+</script>
+      
+<!-- BOTÓ FINAL DEL RANKING -->
+<div style="text-align:center; margin-top:2rem;">
+  <button id="joinRankingBtn" style="
+    padding:1rem 2rem;
+    font-size:1.2rem;
+    font-family:'Oxanium', sans-serif;
+    font-weight:bold;
+    border:none;
+    border-radius:8px;
+    background:#cccccc;
+    color:#000000;
+    cursor:pointer;
+    transition:all 0.3s ease;
+  ">
+    Forma parte de la revolución del running amateur
+  </button>
+</div>
+
+<script>
+  const joinBtn = document.getElementById('joinRankingBtn');
+  joinBtn.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+</script>
+
+</body>
+</html>
