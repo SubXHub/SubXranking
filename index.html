@@ -293,7 +293,16 @@ body::before {
 
     <button type="submit" id="submitButton">Entrar en la lista de espera</button>
   </form>
+      <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 </div>
+    
+<script>
+document.getElementById('formSection').querySelector('form').onsubmit = function() {
+  setTimeout(function() {
+    window.location.href = "/thank-you.html";
+  }, 500); // mig segon per assegurar que el submit s'envia
+};
+</script>
 
 
     <!-- Enlaces a redes sociales -->
